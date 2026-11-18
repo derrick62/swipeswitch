@@ -77,13 +77,18 @@ class GestureRecognizer:
                     # sufficiently dominant or ends; ambiguous gestures do nothing.
                     return actions
 
-            if self.axis == "horizontal" and self.fingers == 3:
-                # Signed steps allow a user to reverse direction mid-swipe.
+            if self.axis == "horizontal" and self.fingers in (3, 4):
+                # Both horizontal gestures consume distance incrementally.
+                # Reversing direction therefore reverses the outstanding
+                # movement naturally instead of waiting until finger-up.
                 step = int(self.dx / self.step_px)
                 delta = step - self.last_step
                 if delta:
                     move_direction = "left" if delta < 0 else "right"
-                    actions.append(GestureAction("switch_move", 3, move_direction, abs(delta)))
+                    action_name = "switch_move" if self.fingers == 3 else "workspace"
+                    actions.append(GestureAction(
+                        action_name, self.fingers, move_direction, abs(delta)
+                    ))
                     self.last_step = step
             return actions
 
@@ -91,13 +96,18 @@ class GestureRecognizer:
             if event.cancelled:
                 if self.fingers == 3 and self.axis == "horizontal":
                     actions.append(GestureAction("switch_cancel", 3, self.direction))
-            elif self.axis == "horizontal" and self.fingers == 4:
-                actions.append(GestureAction("workspace", 4, self.direction))
             elif self.axis == "vertical" and self.fingers == 3:
                 actions.append(GestureAction("task_view" if self.direction == "up"
                                              else "show_desktop", 3, self.direction))
             elif self.axis == "horizontal" and self.fingers == 3:
                 actions.append(GestureAction("switch_commit", 3, self.direction))
+            elif self.axis == "horizontal" and self.fingers == 4:
+                # A short, deliberate four-finger flick should still move one
+                # workspace even if it did not travel a full repeat interval.
+                # Longer swipes have already emitted their crossed steps.
+                if self.last_step == 0 and abs(self.dx) >= self.threshold_px:
+                    final_direction = "left" if self.dx < 0 else "right"
+                    actions.append(GestureAction("workspace", 4, final_direction, 1))
             self.reset()
         return actions
 

@@ -63,8 +63,9 @@ class SwipeSwitchController:
         elif action.name == "switch_move":
             if not self.switch_windows:
                 return
-            # Left advances through MRU order; right moves toward the prior item.
-            delta = action.steps * (1 if action.direction == "left" else -1)
+            # Follow the physical swipe: right advances to the next item,
+            # left moves to the previous item in the displayed MRU sequence.
+            delta = action.steps * (1 if action.direction == "right" else -1)
             self.selected = (self.selected + delta) % len(self.switch_windows)
             self.switcher.update_selection(self.selected)
         elif action.name == "switch_commit":
@@ -82,7 +83,11 @@ class SwipeSwitchController:
             self.switch_windows = []
         elif action.name == "workspace":
             self.task_view.hide()
-            self.workspaces.navigate(action.direction)
+            # A four-finger swipe moves one workspace per crossed distance
+            # threshold. Reversals are emitted as opposite-direction steps.
+            for _ in range(max(1, action.steps)):
+                if not self.workspaces.navigate(action.direction):
+                    break
             self.switch_windows = []
         elif action.name == "show_desktop":
             self.task_view.hide()

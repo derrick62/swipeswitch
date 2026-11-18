@@ -8,7 +8,7 @@ AUTOSTART_DIR="$HOME/.config/autostart"
 command -v apt-get >/dev/null || { echo "Kali/Debian apt-based installer only." >&2; exit 1; }
 echo "Installing system dependencies (sudo may be required)..."
 sudo apt-get update
-sudo apt-get install -y python3 python3-gi gir1.2-gtk-3.0 gir1.2-wnck-3.0 libinput-tools coreutils wmctrl
+sudo apt-get install -y python3 python3-gi gir1.2-gtk-3.0 gir1.2-wnck-3.0 python3-pil libinput-tools coreutils wmctrl
 
 mkdir -p "$BIN_DIR" "$APP_DIR" "$AUTOSTART_DIR"
 cp -R "$ROOT/swipeswitch" "$APP_DIR/"

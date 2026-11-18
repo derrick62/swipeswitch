@@ -19,7 +19,7 @@ Keep input capture, gesture interpretation, desktop operations and presentation 
 | Task View controller | Present persistent overview and manage pointer selection/dismissal |
 | `activator.py` | Activate and unminimise a selected window |
 | `overlay.py` and future views | GTK presentation only; no raw input parsing |
-| `thumbs.py` | Optional thumbnail acquisition with bounded work and graceful failure |
+| `thumbs.py` | Best-effort X11 window snapshot acquisition with graceful icon fallback |
 | `config.py` | Load, validate and expose typed configuration |
 | `__main__.py` | Compose dependencies, own process lifecycle and start the GTK loop |
 
@@ -55,4 +55,4 @@ Malformed input must not terminate the application. A failed thumbnail must not 
 
 ## Current implementation note
 
-The 0.2.0 core preview implements the primary gesture, controller, workspace, desktop-visibility and Task View boundaries. Some responsibilities may still be consolidated or refined after integration testing.
+The 0.3.1 preview adds a horizontal preview-first switcher with a blurred desktop backdrop and incremental workspace navigation. Task View remains a separate persistent grid. Thumbnail acquisition is a synchronous best-effort snapshot at overview-open time; live refresh and performance profiling remain future work.

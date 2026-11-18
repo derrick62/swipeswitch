@@ -1,15 +1,16 @@
 # swipeswitch
 
 A touchpad-driven desktop navigation utility for Kali Linux running XFCE on X11.
-The 0.2.0 core preview implements three-finger window switching, Task View,
-Show Desktop/restoration and four-finger workspace navigation.
+The 0.3.1 preview combines three-finger window switching, Task View,
+Show Desktop/restoration and four-finger workspace navigation with an adaptive,
+preview-first X11 window overview.
 
-**Version:** 0.2.0 — **License:** MIT  
+**Version:** 0.3.1 — **License:** MIT  
 **Status:** Core-feature preview; live desktop acceptance testing and refinement remain outstanding.
 
 ## Core features in this preview
 
-- Three-finger left/right: continuous MRU window selection and activation.
+- Three-finger right: advance to the next MRU window; left: move to the previous window.
 - Three-finger up: open Task View, or restore a valid Show Desktop snapshot.
 - Three-finger down: hide currently visible eligible windows and preserve a snapshot.
 - Four-finger left/right: navigate next/previous XFCE virtual workspaces.
@@ -17,7 +18,9 @@ Show Desktop/restoration and four-finger workspace navigation.
 - libinput listener accepts both three- and four-finger swipe events.
 - Touchpad auto-detection recognises pointer + gesture capabilities.
 - Window tracking includes eligible minimized windows and sticky windows.
-- Task View provides a persistent clickable overview with Escape dismissal.
+- The switcher and Task View show X11 window snapshots when available, with app-icon fallbacks.
+- The switcher uses a softly blurred/dimmed desktop backdrop, a translucent rounded container, large 16:9 window previews with app identity, horizontal browsing and a selected-position counter.
+- Four-finger horizontal gestures move between workspaces incrementally as swipe-distance thresholds are crossed; short flicks still move one workspace and boundaries do not wrap.
 - TOML configuration, XFCE autostart and module-based launcher are included.
 
 These features are implemented in the source but are not yet verified on the
@@ -26,10 +29,12 @@ target laptop. Treat this as a functional preview, not a stable release.
 ## Requirements and limits
 
 Kali/Debian, Python 3.10+ (3.11+ recommended), X11, GTK 3, PyGObject,
-libwnck 3, libinput-tools and XFCE/xfwm4 recommended. Wayland and VMs that
+libwnck 3, Pillow, libinput-tools and XFCE/xfwm4 recommended. Wayland and VMs that
 swallow touchpad gestures are not supported. The switcher overlay targets the
-primary monitor. Window thumbnails, animation, advanced focus restoration,
-multiple touchpads and Wayland support are not yet implemented. Gesture thresholds may need calibration on the target hardware.
+primary monitor. The blurred backdrop is a local snapshot of the composed desktop captured before the overlay opens. Window previews are static snapshots captured when an overview opens,
+not continuously refreshed video. Minimized or inaccessible windows fall back
+to application icons. Animation, advanced focus restoration, multiple touchpads
+and Wayland support are not yet implemented. Gesture thresholds may need calibration on the target hardware.
 
 ## Install
 
@@ -91,6 +96,7 @@ order = "mru"
 gesture_timeout = 3.0
 theme = "dark"
 monitor = "primary"
+thumbnails = true
 ```
 
 - `step_px`: horizontal distance per selection step.
@@ -102,6 +108,7 @@ monitor = "primary"
 - `touchpad_device`: `auto` or a `/dev/input/eventX` path.
 - `theme`: `dark`, `light`, or `auto` (auto currently uses dark fallback).
 - `monitor`: `primary` in v1.
+- `thumbnails`: enable best-effort X11 window snapshots in the switcher.
 
 Reload after editing with `kill -HUP <PID>`.
 
@@ -159,7 +166,7 @@ touchpad -> libinput debug-events --device <touchpad>
   The included fixture is illustrative and must be replaced with captured data.
 - **Core preview:** gesture recognition, switching, workspaces, Show Desktop and Task View implemented; desktop acceptance testing remains outstanding.
 - **Next:** verify all gesture paths on the target laptop, fix integration defects and tune thresholds.
-- **Polish:** thumbnails, animation, monitor support, configuration UX and release hardening.
+- **Polish:** live/animated previews, monitor selection, configuration UX and release hardening.
 - **Phase B/C:** validate another laptop, refine installer, add Debian package
   and release workflow.
 
@@ -180,4 +187,4 @@ The product and engineering source of truth is maintained in `docs/`:
 - `docs/GIT_WORKFLOW.md` — repository, branching and commit conventions.
 - `docs/CHANGELOG.md` — project change history.
 
-The 0.2.0 archive contains the first integrated implementation of the agreed core gestures. It has not yet been validated on the target laptop; consult `docs/AUDIT.md` and the changelog for verification status.
+The 0.3.1 archive contains the horizontal preview switcher and incremental four-finger workspace navigation. It has not yet been validated on the target laptop; consult `docs/AUDIT.md` and the changelog for verification status.

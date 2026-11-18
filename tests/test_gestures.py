@@ -32,12 +32,14 @@ def test_three_finger_down_routes_to_show_desktop():
     assert [a.name for a in actions] == ["show_desktop"]
 
 
-def test_four_finger_left_navigates_next_workspace():
-    recognizer = GestureRecognizer(threshold_px=25)
+def test_four_finger_short_flick_moves_one_workspace_on_end():
+    recognizer = GestureRecognizer(threshold_px=25, step_px=80)
     recognizer.handle(event("begin", 4))
-    recognizer.handle(event("update", 4, dx=-40))
+    assert recognizer.handle(event("update", 4, dx=-40)) == []
     actions = recognizer.handle(event("end", 4))
-    assert [(a.name, a.direction) for a in actions] == [("workspace", "left")]
+    assert [(a.name, a.direction, a.steps) for a in actions] == [
+        ("workspace", "left", 1)
+    ]
 
 
 def test_cancelled_horizontal_switch_never_commits():
@@ -66,3 +68,25 @@ def test_horizontal_reversal_changes_selection_direction():
     # The first update moved one item left. The net displacement is now
     # one item right of the origin, so two rightward steps undo and reverse it.
     assert movement[-1].steps == 2
+
+
+def test_four_finger_workspace_moves_incrementally_with_distance():
+    recognizer = GestureRecognizer(threshold_px=20, step_px=30)
+    recognizer.handle(event("begin", 4))
+    first = recognizer.handle(event("update", 4, dx=-35))
+    second = recognizer.handle(event("update", 4, dx=-45))
+    assert [(a.name, a.fingers, a.direction, a.steps) for a in first + second] == [
+        ("workspace", 4, "left", 1),
+        ("workspace", 4, "left", 1),
+    ]
+    assert recognizer.handle(event("end", 4)) == []
+
+
+def test_four_finger_workspace_reversal_emits_opposite_steps():
+    recognizer = GestureRecognizer(threshold_px=20, step_px=30)
+    recognizer.handle(event("begin", 4))
+    first = recognizer.handle(event("update", 4, dx=-40))
+    reverse = recognizer.handle(event("update", 4, dx=70))
+    assert [(a.direction, a.steps) for a in first + reverse] == [
+        ("left", 1), ("right", 2),
+    ]

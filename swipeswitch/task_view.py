@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import logging
 
+from .thumbs import capture_thumbnail
+
 log = logging.getLogger(__name__)
 
 
@@ -17,7 +19,7 @@ class TaskView:
         self.window.set_decorated(False)
         self.window.set_keep_above(True)
         self.window.set_skip_taskbar_hint(True)
-        self.window.set_default_size(820, 520)
+        self.window.set_default_size(1120, 720)
         self.window.set_position(Gtk.WindowPosition.CENTER)
         self.window.connect("key-press-event", self._on_key)
         self.window.connect("delete-event", self._on_delete)
@@ -26,9 +28,10 @@ class TaskView:
         self.provider.load_from_data(b"""
             window { background: rgba(15, 19, 28, 0.97); }
             .heading { color: #f5f7fb; font-size: 22px; font-weight: 600; }
-            button.task-card { background: #252d3c; color: #f5f7fb; border: 1px solid #414c60; border-radius: 12px; padding: 14px; }
+            button.task-card { background: #252d3c; color: #f5f7fb; border: 1px solid #414c60; border-radius: 14px; padding: 10px; min-width: 210px; min-height: 160px; }
             button.task-card:hover { background: #34445e; border-color: #79aaff; }
-            label.task-title { color: #f5f7fb; }
+            label.task-title { color: #f5f7fb; font-size: 12px; font-weight: 600; }
+            .task-preview { background: #111722; border-radius: 8px; }
         """)
         self.window.get_style_context().add_provider(
             self.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -40,10 +43,10 @@ class TaskView:
         self.root.pack_start(heading, False, False, 0)
         self.grid = Gtk.FlowBox()
         self.grid.set_selection_mode(Gtk.SelectionMode.NONE)
-        self.grid.set_max_children_per_line(4)
+        self.grid.set_max_children_per_line(5)
         self.grid.set_min_children_per_line(1)
-        self.grid.set_column_spacing(14)
-        self.grid.set_row_spacing(14)
+        self.grid.set_column_spacing(16)
+        self.grid.set_row_spacing(16)
         self.grid.set_homogeneous(True)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -64,11 +67,18 @@ class TaskView:
             button = self.Gtk.Button()
             button.get_style_context().add_class("task-card")
             content = self.Gtk.Box(orientation=self.Gtk.Orientation.VERTICAL, spacing=10)
-            icon = window.get_icon()
-            if icon is not None:
-                image = self.Gtk.Image.new_from_pixbuf(icon)
-                image.set_pixel_size(48)
-                content.pack_start(image, False, False, 0)
+            preview = capture_thumbnail(window, self.Gdk, max_width=360, max_height=203)
+            if preview is not None:
+                image = self.Gtk.Image.new_from_pixbuf(preview)
+                image.set_halign(self.Gtk.Align.CENTER)
+                image.get_style_context().add_class("task-preview")
+                content.pack_start(image, True, True, 0)
+            else:
+                icon = window.get_icon()
+                if icon is not None:
+                    image = self.Gtk.Image.new_from_pixbuf(icon)
+                    image.set_pixel_size(48)
+                    content.pack_start(image, True, True, 0)
             title = self.Gtk.Label(label=(window.get_name() or "Untitled window")[:90])
             title.set_line_wrap(True)
             title.set_max_width_chars(24)

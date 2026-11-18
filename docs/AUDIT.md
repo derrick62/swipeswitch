@@ -28,7 +28,7 @@
 
 ## Missing
 
-- Asynchronous thumbnail capture.
+- Live/animated preview refresh and performance profiling; current previews are one-shot X11 snapshots captured when the overview opens.
 - Structured logging/diagnostics and broader integration tests.
 - Complete project documentation and release workflow.
 
@@ -59,4 +59,13 @@ The 0.2.0 core preview adds `gestures.py`, `controller.py`, `workspaces.py`, `de
 
 ## Verification status
 
-The updated working tree passes 27 automated tests and Python bytecode compilation in the available Python 3.13 environment. This environment does not have PyGObject, so live GTK/libwnck integration, `--check` in an X11 session, and target-device acceptance remain unverified. Run the suite and live checks on the target Kali/XFCE/X11 laptop before treating the preview as stable.
+The 0.3.1 working tree passes 35 automated tests and Python bytecode compilation. This environment does not have PyGObject, so live GTK/libwnck integration, `--check` in an X11 session, and target-device acceptance remain unverified. Run the suite and live checks on the target Kali/XFCE/X11 laptop before treating the preview as stable.
+
+
+## 0.3.1 visual and gesture refinement
+
+- The switcher now uses a rounded translucent container over a locally blurred/dimmed desktop snapshot, large 16:9 preview cards in a horizontal scrolling strip, application identity/title, selected-card emphasis and a position counter.
+- Task View uses the same best-effort X11 snapshot capture with icon fallback.
+- Rightward three-finger movement advances through the displayed MRU sequence; leftward movement goes to the previous item.
+- Four-finger horizontal navigation now consumes swipe distance incrementally, supports reversal and short-flick fallback, and retains non-wrapping workspace boundaries.
+- `GdkX11`/foreign-window capture is optional and was not runtime-verified in this build environment because PyGObject is unavailable here.

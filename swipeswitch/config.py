@@ -12,7 +12,7 @@ DEFAULTS = {
     "flick_min_px": 40, "invert_direction": False,
     "current_workspace_only": True, "order": "mru",
     "gesture_timeout": 3.0, "use_unaccelerated": False,
-    "touchpad_device": "auto", "thumbnails": False,
+    "touchpad_device": "auto", "thumbnails": True,
     "thumb_budget_ms": 150, "theme": "dark", "monitor": "primary",
 }
 
@@ -28,7 +28,7 @@ class Config:
     gesture_timeout: float = 3.0
     use_unaccelerated: bool = False
     touchpad_device: str = "auto"
-    thumbnails: bool = False
+    thumbnails: bool = True
     thumb_budget_ms: int = 150
     theme: str = "dark"
     monitor: str = "primary"

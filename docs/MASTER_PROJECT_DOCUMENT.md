@@ -28,8 +28,8 @@ The product is not merely a collection of gesture bindings. It must reliably cap
 
 | Gesture | Action |
 |---|---|
-| Three fingers left | Next window |
-| Three fingers right | Previous window |
+| Three fingers left | Previous window |
+| Three fingers right | Next window |
 
 The switcher presents a live selection overlay. Selection follows accumulated horizontal movement and the highlighted window is activated on release. The default ordering is most-recently-used. Eligible windows are on the current workspace, with sticky windows included. Minimized windows remain eligible and must be unminimized before activation. Panels, docks, desktop windows, splash windows, and SwipeSwitch's own overlay are excluded. Selection wraps around. If fewer than two eligible windows exist, the gesture does nothing. Cancellation must never activate a window. Quick-flick switching remains optional and must not compromise normal selection.
 

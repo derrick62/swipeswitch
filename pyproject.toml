@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "swipeswitch"
-version = "0.2.0"
+version = "0.3.1"
 description = "Touchpad-driven window and workspace navigation for X11 desktops"
 readme = "README.md"
 requires-python = ">=3.10"

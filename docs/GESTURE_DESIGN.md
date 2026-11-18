@@ -4,8 +4,8 @@
 
 | Fingers | Direction | Intent |
 |---|---|---|
-| 3 | Left | Next window |
-| 3 | Right | Previous window |
+| 3 | Left | Previous window |
+| 3 | Right | Next window |
 | 3 | Up | Restore Show Desktop snapshot, or Task View if none exists |
 | 3 | Down | Show Desktop |
 | 4 | Left | Next workspace |
@@ -34,7 +34,7 @@ Three-finger down captures the set of currently visible eligible windows and hid
 
 ## Workspace lifecycle
 
-Four-finger horizontal gestures navigate one workspace per completed gesture. The initial policy is non-wrapping. Repeated UPDATE events contribute to direction/threshold recognition but must not cause repeated workspace changes.
+Four-finger horizontal gestures use the same accumulated-distance step model as three-finger window switching. Each crossed threshold moves one workspace immediately; reversing direction emits the corresponding opposite step. A short deliberate flick that crosses the gesture-classification threshold but not a full repeat interval moves one workspace on END. The initial policy is non-wrapping, and navigation stops at workspace boundaries.
 
 ## Calibration
 

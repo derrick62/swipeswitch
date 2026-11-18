@@ -8,3 +8,4 @@ order = "mru"
 gesture_timeout = 3.0
 theme = "dark"
 monitor = "primary"
+thumbnails = true

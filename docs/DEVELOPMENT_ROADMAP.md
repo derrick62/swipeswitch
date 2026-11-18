@@ -10,7 +10,7 @@ The project is developed through controlled milestones. A milestone closes only 
 | 3 — Workspace navigation | Workspace discovery, direction, boundaries and gesture integration | Four-finger horizontal navigation works without duplicate actions |
 | 4 — Show Desktop | Visible-window snapshot, hide and safe restoration | Previously visible windows are restored without restoring previously minimized windows |
 | 5 — Task View | Persistent grid, selection, activation and dismissal | Task View behaves independently from the horizontal switcher |
-| 6 — Visual refinement | Icons, thumbnails, layout, animation, themes and monitor considerations | UI is coherent and responsive; thumbnails remain optional |
+| 6 — Visual refinement | Icons, thumbnails, layout, animation, themes and monitor considerations | UI is coherent and responsive; preview capture degrades safely when unavailable |
 | 7 — Integration and reliability | Cross-feature testing, conflicts, recovery, logging and performance | Complete gesture set works together reliably |
 | 8 — Packaging | Installation, configuration, startup, diagnostics and uninstall | Fresh install/configure/launch/uninstall workflow is reproducible |
 | 9 — Release | Versioning, release notes, compatibility and maintenance process | Documented release candidate meets release checklist |
@@ -33,4 +33,4 @@ three-finger window switching, four-finger workspace navigation, Show Desktop
 snapshot/restore, and Task View. The implementation is a functional preview;
 no live-desktop acceptance verification is claimed yet. The next development
 pass is integration testing and defect correction across all six gesture paths.
-Visual polish, thumbnails and packaging hardening remain subsequent work.
+The preview-first visual refinement is now implemented; live X11 capture, physical touchpad acceptance and packaging hardening remain to be verified.

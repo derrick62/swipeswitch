@@ -47,13 +47,32 @@ All notable project changes are documented here.
 - Python compilation passed.
 - Live Kali/XFCE/X11 and physical touchpad validation remain outstanding.
 
-## Window switcher presentation update
 
-- Reworked the switcher into a wider, structured carousel with a heading, live
-  position counter, and gesture hint.
-- Increased card size and spacing, added a dedicated app-icon preview area,
-  clearer typography, and stronger selected-card styling in both themes.
-- Added horizontal scrolling and automatic scrolling of the selected card so
-  large window lists remain browsable without shrinking every card.
-- Window preview areas currently use application icons; live window thumbnails
-  remain a separate future enhancement because thumbnail capture is disabled.
+## 0.3.0 — Preview-first switcher and workspace refinement
+
+- Corrected horizontal selection direction so a rightward swipe advances to the next displayed window and a leftward swipe moves to the previous one.
+- Replaced the small icon strip with a centered, full-monitor dimmed overview.
+- Added best-effort X11 window snapshots using GDK foreign-window capture.
+- Added 16:9 preview tiles, application identity/title, selection emphasis and scroll-to-selection for large window sets.
+- Added graceful icon fallback for minimized, unmapped or inaccessible windows.
+- Applied the same preview-first treatment to Task View.
+- Retained four-finger left/right workspace navigation and added regression coverage that a multi-update swipe emits exactly one workspace action.
+- Updated documentation and bumped the project version to 0.3.0.
+
+### Verification
+- Automated tests and Python compilation run in the packaging environment; live X11 preview capture and physical four-finger gesture behavior still require verification on the target Kali/XFCE laptop.
+
+
+## 0.3.1 — Horizontal switcher and continuous workspace navigation
+
+- Replaced the multi-row preview grid with a horizontal card strip and horizontal scrolling.
+- Increased card dimensions and spacing; each card has a dedicated 16:9 preview area with application icon and title beneath it.
+- Added a translucent rounded container, a locally captured blurred desktop backdrop when Pillow/X11 capture is available, and a graceful dimmed-overlay fallback.
+- Added a high-contrast selected card and a live selected-position counter.
+- Changed four-finger workspace navigation to consume swipe distance incrementally, support mid-gesture reversals, and retain a one-workspace short-flick fallback.
+- Preserved existing three-finger gesture routing and window activation behaviour.
+- Added Pillow to the Debian/Kali installer for desktop-backdrop blur.
+
+### Verification
+- 35 automated tests pass, Python bytecode compilation passes, and a wheel builds successfully using the available local build tools.
+- Live GTK/X11 rendering, compositor behaviour, and physical touchpad feel still require validation on the target laptop.
