@@ -5,7 +5,7 @@ systems running XFCE on X11. SwipeSwitch combines three-finger window
 switching, Task View, Show Desktop/restoration and four-finger workspace
 navigation with a horizontal, preview-first window switcher.
 
-**Version:** 0.3.3 — **License:** MIT  
+**Version:** 0.3.4 — **License:** MIT  
 **Status:** First installable Debian package; live acceptance testing on the
 target laptop is still required before calling the application stable.
 
@@ -33,7 +33,7 @@ in the Debian package and are installed by APT.
 
 ## Install the Debian package
 
-Download or build `swipeswitch_0.3.4_all.deb`, then install it with APT:
+Download the [SwipeSwitch 0.3.4 Debian package](https://github.com/derrick62/swipeswitch/releases/download/v0.3.4/swipeswitch_0.3.4_all.deb) from GitHub Releases. The package is also included in the repository at [`dist/swipeswitch_0.3.4_all.deb`](dist/swipeswitch_0.3.4_all.deb). Install it with APT:
 
 ```bash
 sudo apt install ./swipeswitch_0.3.4_all.deb
