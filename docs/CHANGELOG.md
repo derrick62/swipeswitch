@@ -76,3 +76,15 @@ All notable project changes are documented here.
 ### Verification
 - 35 automated tests pass, Python bytecode compilation passes, and a wheel builds successfully using the available local build tools.
 - Live GTK/X11 rendering, compositor behaviour, and physical touchpad feel still require validation on the target laptop.
+
+
+## 0.3.2 — Explicit switcher selection feedback
+
+- Added a prominent “SELECTED” badge directly on the currently highlighted window preview.
+- Strengthened the selected card border and contrast in both dark and light themes.
+- Added a live “Switching to: [window title]” label so the destination remains clear while browsing.
+- Kept the position counter and horizontal auto-scroll synchronized with the selected card.
+- No gesture recognition, window tracking, activation, Task View, or Show Desktop logic changed.
+
+### Verification
+- Automated tests and Python bytecode compilation are run for this release. GTK rendering and physical touchpad acceptance still require testing on the target Kali/XFCE/X11 laptop.

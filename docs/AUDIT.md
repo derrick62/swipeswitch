@@ -69,3 +69,8 @@ The 0.3.1 working tree passes 35 automated tests and Python bytecode compilation
 - Rightward three-finger movement advances through the displayed MRU sequence; leftward movement goes to the previous item.
 - Four-finger horizontal navigation now consumes swipe distance incrementally, supports reversal and short-flick fallback, and retains non-wrapping workspace boundaries.
 - `GdkX11`/foreign-window capture is optional and was not runtime-verified in this build environment because PyGObject is unavailable here.
+
+
+## 0.3.2 selection-feedback refinement
+
+The switcher now identifies the highlighted destination in three simultaneous ways: a high-contrast selected-card outline, a “SELECTED” badge on that card's preview, and a live “Switching to: [window title]” label. The position counter remains visible. These changes are confined to `overlay.py`; gesture and desktop-action modules are unchanged. Automated tests do not replace a live GTK/X11 visual check.

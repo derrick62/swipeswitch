@@ -1,11 +1,11 @@
 # swipeswitch
 
 A touchpad-driven desktop navigation utility for Kali Linux running XFCE on X11.
-The 0.3.1 preview combines three-finger window switching, Task View,
+The 0.3.2 preview combines three-finger window switching, Task View,
 Show Desktop/restoration and four-finger workspace navigation with an adaptive,
-preview-first X11 window overview.
+preview-first X11 window overview with an explicit selected-window indicator.
 
-**Version:** 0.3.1 — **License:** MIT  
+**Version:** 0.3.2 — **License:** MIT  
 **Status:** Core-feature preview; live desktop acceptance testing and refinement remain outstanding.
 
 ## Core features in this preview
@@ -187,4 +187,4 @@ The product and engineering source of truth is maintained in `docs/`:
 - `docs/GIT_WORKFLOW.md` — repository, branching and commit conventions.
 - `docs/CHANGELOG.md` — project change history.
 
-The 0.3.1 archive contains the horizontal preview switcher and incremental four-finger workspace navigation. It has not yet been validated on the target laptop; consult `docs/AUDIT.md` and the changelog for verification status.
+The 0.3.2 archive contains the horizontal preview switcher and incremental four-finger workspace navigation. It has not yet been validated on the target laptop; consult `docs/AUDIT.md` and the changelog for verification status.
