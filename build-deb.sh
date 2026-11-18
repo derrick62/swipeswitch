@@ -22,6 +22,7 @@ cat > "$PKG/usr/bin/swipeswitch" <<'LAUNCHER'
 exec /usr/bin/python3 -m swipeswitch "$@"
 LAUNCHER
 chmod 0755 "$PKG/usr/bin/swipeswitch"
+install -m 0755 "$ROOT/scripts/swipeswitch-conflicts.py" "$PKG/usr/bin/swipeswitch-conflicts"
 install -m 0644 "$ROOT/packaging/swipeswitch.desktop" \
   "$PKG/usr/share/applications/swipeswitch.desktop"
 install -m 0644 "$ROOT/packaging/swipeswitch-autostart.desktop" \
@@ -34,6 +35,17 @@ install -m 0644 "$ROOT"/docs/*.md "$PKG/usr/share/doc/swipeswitch/docs/"
 
 mkdir -p "$ROOT/dist"
 OUTPUT="$ROOT/dist/swipeswitch_${VERSION}_all.deb"
+cat > "$PKG/DEBIAN/postinst" <<'POSTINST'
+#!/bin/sh
+set -e
+if [ "$1" = configure ] && [ -x /usr/bin/swipeswitch-conflicts ]; then
+    echo "SwipeSwitch: checking for known competing touchpad gesture handlers..."
+    /usr/bin/swipeswitch-conflicts --system-only || true
+    echo "If any conflicts were listed, review them with: swipeswitch-conflicts --resolve"
+fi
+exit 0
+POSTINST
+chmod 0755 "$PKG/DEBIAN/postinst"
 dpkg-deb --build --root-owner-group "$PKG" "$OUTPUT"
 echo "Built: $OUTPUT"
 echo "Install with: sudo apt install '$OUTPUT'"

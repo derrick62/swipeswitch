@@ -90,3 +90,22 @@ been inspected. This environment does not provide a live GTK/X11 desktop, so
 actual rendering, backdrop capture, multi-monitor placement and touchpad
 acceptance remain unverified. `--check` and a real gesture test should be run
 after installation on the target machine.
+
+
+## 0.3.4 installer conflict checks
+
+The source installer now scans for a conservative allowlist of common gesture
+interpreters (libinput-gestures, Touchegg, Fusuma and Gebaar). It reports running
+processes, enabled systemd services and matching per-user XFCE autostart files.
+Interactive resolution is opt-in for each action: stop services, disable
+autostart entries (by preserving them with a `.disabled-by-swipeswitch`
+suffix), or send SIGTERM to remaining processes. No packages are uninstalled
+and libinput itself is never disabled.
+
+The Debian package runs a system-scoped, non-interactive detection report during
+configuration and installs `swipeswitch-conflicts --resolve` for the full
+per-user scan and user-controlled follow-up. This distinction avoids treating
+root's home directory or root's user systemd manager as the desktop user's.
+The helper has focused tests for process matching, autostart matching and
+enabled-service filtering. Live behaviour with each third-party gesture manager
+remains a target-machine acceptance test.

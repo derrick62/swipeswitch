@@ -1,3 +1,14 @@
+## 0.3.4
+
+- Added conservative detection of common competing touchpad gesture handlers:
+  libinput-gestures, Touchegg, Fusuma and Gebaar.
+- The source installer offers interactive, permission-based conflict resolution.
+- Debian packages report detected conflicts and provide the
+  `swipeswitch-conflicts --resolve` command; package maintainer scripts remain
+  non-interactive.
+- Autostart entries are preserved when disabled; no competing package is
+  uninstalled and libinput itself is never disabled.
+
 # Changelog
 
 All notable project changes are documented here.

@@ -33,10 +33,10 @@ in the Debian package and are installed by APT.
 
 ## Install the Debian package
 
-Download or build `swipeswitch_0.3.3_all.deb`, then install it with APT:
+Download or build `swipeswitch_0.3.4_all.deb`, then install it with APT:
 
 ```bash
-sudo apt install ./swipeswitch_0.3.3_all.deb
+sudo apt install ./swipeswitch_0.3.4_all.deb
 ```
 
 APT installs the required runtime dependencies. The package installs:
@@ -45,6 +45,20 @@ APT installs the required runtime dependencies. The package installs:
 - `/usr/lib/python3/dist-packages/swipeswitch/` — application modules
 - `/usr/share/applications/swipeswitch.desktop` — application-menu entry
 - `/etc/xdg/autostart/swipeswitch.desktop` — XFCE session autostart
+
+
+### Touchpad gesture conflicts
+
+The package checks for system-wide running handlers and enabled system services
+during installation. APT package scripts are intentionally non-interactive
+and run as root, so per-user services and XFCE autostart entries are checked
+when you run `swipeswitch-conflicts --resolve` in your desktop terminal. The
+helper asks before stopping a process or disabling a recognised user/system
+service or XFCE autostart entry. It never uninstalls another application;
+disabled autostart files are preserved with a `.disabled-by-swipeswitch` suffix.
+
+For the source installer (`./install.sh`), this interactive review is offered
+during installation. You can run `swipeswitch-conflicts --resolve` again later.
 
 Log out and back in (or start it manually) after installation. Run it as your
 normal desktop user; **never use `sudo swipeswitch`**.
@@ -76,7 +90,7 @@ On a Debian/Kali build machine with `dpkg-deb` installed:
 ./build-deb.sh
 ```
 
-The package is written to `dist/swipeswitch_0.3.3_all.deb`. The package is
+The package is written to `dist/swipeswitch_0.3.4_all.deb`. The package is
 architecture-independent; its runtime dependencies are supplied by APT.
 
 ## Input-device permissions

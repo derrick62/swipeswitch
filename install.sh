@@ -10,10 +10,15 @@ echo "Installing system dependencies (sudo may be required)..."
 sudo apt-get update
 sudo apt-get install -y python3 python3-gi gir1.2-gtk-3.0 gir1.2-wnck-3.0 python3-pil libinput-tools coreutils wmctrl
 
+echo
+echo "Checking for other touchpad gesture handlers..."
+python3 "$ROOT/scripts/swipeswitch-conflicts.py" --resolve
+
 mkdir -p "$BIN_DIR" "$APP_DIR" "$AUTOSTART_DIR"
 cp -R "$ROOT/swipeswitch" "$APP_DIR/"
 cp "$ROOT/pyproject.toml" "$ROOT/README.md" "$APP_DIR/"
 cp -R "$ROOT/docs" "$APP_DIR/"
+install -m 0755 "$ROOT/scripts/swipeswitch-conflicts.py" "$BIN_DIR/swipeswitch-conflicts"
 cat > "$BIN_DIR/swipeswitch" <<EOF
 #!/usr/bin/env bash
 export PYTHONPATH="$APP_DIR\${PYTHONPATH:+:\$PYTHONPATH}"
@@ -28,4 +33,5 @@ if [[ ! -f "$HOME/.config/swipeswitch/config.toml" ]]; then
 fi
 cp "$ROOT/packaging/swipeswitch.desktop" "$AUTOSTART_DIR/"
 echo "Installed. Run ~/.local/bin/swipeswitch --check, then start with swipeswitch."
+echo "To check or resolve gesture conflicts later: swipeswitch-conflicts --resolve"
 echo "See README.md for input-device permissions and troubleshooting."
