@@ -164,14 +164,14 @@ class SwitcherOverlay:
       window, the owner can call ``remove_window(index)`` to drop its card.
     """
 
-    CARD_WIDTH = 362  # includes card padding and borders
+    CARD_WIDTH = 362
     CARD_GAP = 16
     PREVIEW_W = 308
     PREVIEW_H = 173
-    CARD_EXTRA_W = 54   # card width minus preview width (padding, borders)
-    CARD_EXTRA_H = 69   # card height minus preview height (meta row, padding)
-    STRIP_PAD_X = 18    # room for the selection glow at the strip's ends
-    STRIP_PAD_Y = 14    # room for the selection glow above and below cards
+    CARD_EXTRA_W = 54
+    CARD_EXTRA_H = 69
+    STRIP_PAD_X = 18
+    STRIP_PAD_Y = 14
     COMPACT_MIN_COUNT = 4
     COMPACT_SCALE = 0.75
     BACKDROP_DOWNSCALE = 4
@@ -248,7 +248,6 @@ class SwitcherOverlay:
         self.scroll.set_shadow_type(Gtk.ShadowType.NONE)
         self.scroll.add(self.strip)
 
-        # Edge fades sit above the scroller and hint at off-screen windows.
         self.edge_left = Gtk.Box()
         self.edge_left.get_style_context().add_class("edge-left")
         self.edge_left.set_halign(Gtk.Align.START)
@@ -303,7 +302,6 @@ class SwitcherOverlay:
     # ------------------------------------------------------------------ theme
 
     def _resolve_theme(self):
-        """Return "light" or "dark", following the system in "auto" mode."""
         theme = getattr(self.config, "theme", "dark")
         if theme in ("auto", "system"):
             try:
@@ -342,7 +340,6 @@ class SwitcherOverlay:
 
     @staticmethod
     def _safe(call, default=None):
-        """Call a window accessor, tolerating windows that lack or fail it."""
         try:
             return call()
         except Exception:
@@ -357,7 +354,6 @@ class SwitcherOverlay:
 
     @staticmethod
     def _fit_pixbuf(pixbuf, max_w, max_h):
-        """Shrink a pixbuf to fit a box, preserving its aspect ratio."""
         width, height = pixbuf.get_width(), pixbuf.get_height()
         if width <= max_w and height <= max_h:
             return pixbuf
@@ -401,7 +397,6 @@ class SwitcherOverlay:
         return None
 
     def _workspace_name(self, window):
-        """Workspace label, only when there is more than one workspace."""
         count = self._safe(lambda: window.get_screen().get_workspace_count(), 1)
         if not count or count < 2:
             return None
@@ -425,7 +420,6 @@ class SwitcherOverlay:
         return display.get_primary_monitor() or display.get_monitor(0)
 
     def _compute_metrics(self, geo, count):
-        """Derive every size from the monitor and the number of windows."""
         scale, compact = 1.0, False
         frame_w, frame_h_cap = 1380, 430
         if geo is not None:
@@ -468,13 +462,6 @@ class SwitcherOverlay:
     # ---------------------------------------------------------------- backdrop
 
     def _capture_blurred_backdrop(self, geo):
-        """Capture and blur the composed X11 desktop before showing the overlay.
-
-        The blur runs on a reduced-resolution copy, which is both much faster
-        and visually near-identical, then is stretched back up at draw time.
-        Pillow is installed by the Debian/Kali installer. If screen capture or
-        Pillow is unavailable, the translucent dim layer remains the fallback.
-        """
         try:
             from PIL import Image, ImageFilter
 
@@ -552,7 +539,6 @@ class SwitcherOverlay:
             self.window.set_opacity(1.0)
 
     def _post_show_layout(self):
-        """Re-centre once GTK has allocated the cards (not known earlier)."""
         self._scroll_selected_into_view(instant=True)
         self._update_edges()
         return False
@@ -564,7 +550,6 @@ class SwitcherOverlay:
         self._backdrop = None
 
     def remove_window(self, index):
-        """Drop one card, e.g. after the owner closed that window."""
         if not 0 <= index < len(self.windows):
             return
         del self.windows[index]
@@ -614,7 +599,6 @@ class SwitcherOverlay:
         meta.pack_start(title, True, True, 0)
         box.pack_start(meta, False, False, 0)
 
-        # The event box has no window of its own; it only receives the pointer.
         event_box = Gtk.EventBox()
         event_box.set_visible_window(False)
         event_box.add(box)
@@ -629,7 +613,6 @@ class SwitcherOverlay:
         return cobj
 
     def _update_card_content(self, cobj):
-        """Refresh title, icon and preview of a (possibly reused) card."""
         window = cobj.window
         name = self._window_title(window)
         cobj.title.set_text(name[:120])
@@ -648,7 +631,6 @@ class SwitcherOverlay:
             self._install_preview(cobj)
 
     def _install_preview(self, cobj):
-        """Put the thumbnail, or else an icon or glyph, into the preview area."""
         Gtk = self.Gtk
         for child in cobj.preview_area.get_children():
             cobj.preview_area.remove(child)
@@ -681,10 +663,9 @@ class SwitcherOverlay:
                 context.remove_class(name)
 
     def _rebuild(self):
-        """Lay the strip out again, reusing cached cards wherever possible."""
         previous = self._card_cache
         for child in self.strip.get_children():
-            self.strip.remove(child)  # cached cards keep their own references
+            self.strip.remove(child)
         self._card_cache, self._card_objs, self.cards = {}, [], []
         size_key = (self._metrics.card_w, self._metrics.card_h)
 
@@ -736,7 +717,6 @@ class SwitcherOverlay:
     # --------------------------------------------------------------- thumbnails
 
     def _schedule_thumbnails(self):
-        """Capture thumbnails lazily, nearest the selection first."""
         self._cancel_thumbnails()
         if not self._thumbnails_enabled() or not self._card_objs:
             return
@@ -772,7 +752,7 @@ class SwitcherOverlay:
             log.debug("Thumbnail capture failed", exc_info=True)
             return
         if pixbuf is None:
-            return  # keep the previous thumbnail, or the icon
+            return
         cobj.thumb = self._fit_pixbuf(pixbuf, max_w, max_h)
         self._install_preview(cobj)
 
@@ -788,7 +768,7 @@ class SwitcherOverlay:
         if self.on_select is None or not getattr(self.config, "hover_select", True):
             return False
         if GLib.get_monotonic_time() < self._ignore_pointer_until:
-            return False  # a pointer resting under the overlay is not a choice
+            return False
         index = self._card_index(cobj)
         if index >= 0 and index != self.selected:
             self.update_selection(index, recenter=False)
@@ -824,7 +804,6 @@ class SwitcherOverlay:
         return max(adjustment.get_lower(), min(target, maximum))
 
     def _visible_target(self):
-        """Smallest scroll that brings the selected card fully into view."""
         adjustment = self.scroll.get_hadjustment()
         allocation = self._card_objs[self.selected].event_box.get_allocation()
         value, page = adjustment.get_value(), adjustment.get_page_size()
@@ -898,7 +877,6 @@ class SwitcherOverlay:
             return
         self._fade_t0 = None
         self._fade_tick = self.window.add_tick_callback(self._fade_step)
-        # Never leave the overlay invisible if the frame clock stalls.
         self._fade_guard = GLib.timeout_add(self.FADE_MS * 4, self._fade_guard_expired)
 
     def _fade_step(self, widget, clock):

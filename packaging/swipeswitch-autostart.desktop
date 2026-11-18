@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SwipeSwitch
+Comment=Start touchpad window navigation in XFCE
+Exec=swipeswitch
+Terminal=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;

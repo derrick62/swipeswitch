@@ -88,3 +88,14 @@ All notable project changes are documented here.
 
 ### Verification
 - Automated tests and Python bytecode compilation are run for this release. GTK rendering and physical touchpad acceptance still require testing on the target Kali/XFCE/X11 laptop.
+
+## 0.3.3 — First installable Debian package
+
+- Replaced the switcher overlay with the supplied polished GTK3 implementation: monitor-aware sizing, optional mouse callbacks, cached cards, lazy thumbnails, eased horizontal scrolling, edge fades and a reduced-resolution blurred backdrop.
+- Added a reproducible Debian package builder and package metadata with declared runtime dependencies.
+- Added system-wide launcher, application-menu entry and XFCE autostart integration.
+- Updated installation, permissions, removal and live-validation documentation.
+- Kept gesture recognition, window tracking, activation, Task View and Show Desktop/workspace logic unchanged.
+
+### Verification
+- Automated tests and Python compilation are run for the release archive. GTK/X11 rendering and physical touchpad behaviour still require acceptance testing on the target machine.

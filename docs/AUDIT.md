@@ -74,3 +74,19 @@ The 0.3.1 working tree passes 35 automated tests and Python bytecode compilation
 ## 0.3.2 selection-feedback refinement
 
 The switcher now identifies the highlighted destination in three simultaneous ways: a high-contrast selected-card outline, a “SELECTED” badge on that card's preview, and a live “Switching to: [window title]” label. The position counter remains visible. These changes are confined to `overlay.py`; gesture and desktop-action modules are unchanged. Automated tests do not replace a live GTK/X11 visual check.
+
+## 0.3.3 packaging and overlay update
+
+The 0.3.3 release replaces `overlay.py` with the monitor-aware, lazy-thumbnail
+GTK3 implementation supplied for this release. The gesture recognizer,
+controller, tracker, desktop visibility manager, workspace manager and Task
+View implementation are retained from 0.3.2.
+
+The source tree now builds an architecture-independent Debian package with a
+system launcher, application-menu entry, XFCE autostart entry and explicit
+APT runtime dependencies. Automated tests and bytecode compilation pass in
+the packaging environment, and the generated `.deb` metadata/content have
+been inspected. This environment does not provide a live GTK/X11 desktop, so
+actual rendering, backdrop capture, multi-monitor placement and touchpad
+acceptance remain unverified. `--check` and a real gesture test should be run
+after installation on the target machine.
