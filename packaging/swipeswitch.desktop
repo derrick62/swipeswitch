@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SwipeSwitch
+Comment=Live-preview touchpad window switcher
+Exec=swipeswitch
+Terminal=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;

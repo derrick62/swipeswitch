@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Local runtime and editor files
+*.log
+*.pid
+.vscode/
+.idea/
+.DS_Store

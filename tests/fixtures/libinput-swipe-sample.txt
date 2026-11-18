@@ -1,0 +1,5 @@
+# Illustrative only; replace with real output from the target touchpad.
+event4 GESTURE_SWIPE_BEGIN +0.123s 3
+event4 GESTURE_SWIPE_UPDATE +0.140s 3 -12.50/+1.25
+event4 GESTURE_SWIPE_UPDATE +0.156s 3 -18.00/+0.50
+event4 GESTURE_SWIPE_END +0.172s 3

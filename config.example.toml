@@ -1,0 +1,10 @@
+# SwipeSwitch core preview configuration
+touchpad_device = "auto"
+step_px = 80
+show_threshold_px = 35
+use_unaccelerated = false
+current_workspace_only = true
+order = "mru"
+gesture_timeout = 3.0
+theme = "dark"
+monitor = "primary"
