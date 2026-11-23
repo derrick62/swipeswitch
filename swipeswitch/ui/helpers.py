@@ -74,17 +74,20 @@ class WindowPropertyHelpers:
 # Layout engine
 # ---------------------------------------------------------------------------
 
-# Switcher overlay card constants (design baseline at 1920 px wide).
-_CARD_WIDTH   = 362
-_CARD_GAP     = 16
-_PREVIEW_W    = 308
-_PREVIEW_H    = 173
-_CARD_EXTRA_W = 54
-_CARD_EXTRA_H = 69
-_STRIP_PAD_X  = 18
-_STRIP_PAD_Y  = 14
-_COMPACT_MIN_COUNT = 4
-_COMPACT_SCALE     = 0.75
+# Switcher overlay — fixed vertical proportions.
+# Card width is derived at runtime from monitor width and window count.
+_CARD_GAP      = 12          # px between cards
+_PREVIEW_ASPECT = 16 / 9     # width / height ratio for preview area
+_CARD_PADDING  = 20          # horizontal internal padding (left+right)
+_CARD_EXTRA_H  = 69          # height above the preview: title + icon row + padding
+_STRIP_PAD_X   = 24          # strip margin left and right inside the frame
+_STRIP_PAD_Y   = 14          # strip margin top and bottom
+_FRAME_PAD_X   = 48          # frame internal horizontal padding (left+right)
+
+# Card width limits — cards never grow beyond _CARD_MAX_W (looks too wide)
+# and never shrink below _CARD_MIN_W (becomes unreadable below this).
+_CARD_MAX_W    = 362
+_CARD_MIN_W    = 90
 
 
 class LayoutEngine:
@@ -93,6 +96,10 @@ class LayoutEngine:
     Returns a ``SimpleNamespace`` with all sizing values so callers never
     guess at magic numbers.  The same namespace is passed to ``CardBuilder``
     so there is a single source of truth for card dimensions.
+
+    Card width is solved from the available frame width and window count so
+    that all cards always fit in one row without scrolling — Windows Alt+Tab
+    style.  Cards shrink as more windows open, down to ``_CARD_MIN_W``.
     """
 
     @staticmethod
@@ -102,42 +109,43 @@ class LayoutEngine:
         *geo* may be ``None`` (before the first real show); returns safe
         fallback values in that case.
         """
-        scale = 1.0
-        compact = False
-        frame_w = 1380
-        frame_h_cap = 430
-
+        # ── monitor-aware frame width ──────────────────────────────────────
         if geo is not None:
-            scale = max(0.8, min(1.25, geo.width / 1920.0))
             frame_w = min(1380, max(620, int(geo.width * 0.86)))
             frame_w = min(frame_w, max(480, geo.width - 40))
             frame_h_cap = max(330, geo.height - 40)
+        else:
+            frame_w = 1380
+            frame_h_cap = 430
 
-            inner = frame_w - 48 - 2 * _STRIP_PAD_X
-            card_w = round(_PREVIEW_W * scale) + _CARD_EXTRA_W
-            visible = max(1, (inner + _CARD_GAP) // (card_w + _CARD_GAP))
-            if count > max(visible, _COMPACT_MIN_COUNT):
-                scale *= _COMPACT_SCALE
-                compact = True
+        # ── solve card width so all cards fit in one row ───────────────────
+        # Available horizontal space inside the strip (inside the frame,
+        # minus frame padding and strip margins).
+        n = max(1, count)
+        inner = frame_w - _FRAME_PAD_X - 2 * _STRIP_PAD_X
 
-        pv_w   = round(_PREVIEW_W * scale)
-        pv_h   = round(_PREVIEW_H * scale)
-        card_w = pv_w + _CARD_EXTRA_W
+        # card_w * n + gap * (n-1) <= inner
+        # card_w <= (inner - gap*(n-1)) / n
+        card_w = max(
+            _CARD_MIN_W,
+            min(_CARD_MAX_W, (inner - _CARD_GAP * (n - 1)) // n),
+        )
+
+        # ── derive preview and card height from card width ─────────────────
+        pv_w   = max(32, card_w - _CARD_PADDING)
+        pv_h   = max(28, round(pv_w / _PREVIEW_ASPECT))
         card_h = pv_h + _CARD_EXTRA_H
-        scroll_h = card_h + 2 * _STRIP_PAD_Y
-        edge_w = round(56 * scale)
+
+        strip_h = card_h + 2 * _STRIP_PAD_Y
 
         return SimpleNamespace(
-            scale=scale,
-            compact=compact,
             pv_w=pv_w,
             pv_h=pv_h,
             card_w=card_w,
             card_h=card_h,
-            scroll_h=scroll_h,
-            edge_w=edge_w,
+            strip_h=strip_h,
             frame_w=frame_w,
-            frame_h=min(scroll_h + 160, frame_h_cap),
+            frame_h=min(strip_h + 160, frame_h_cap),
             strip_pad_x=_STRIP_PAD_X,
             strip_pad_y=_STRIP_PAD_Y,
             card_gap=_CARD_GAP,
