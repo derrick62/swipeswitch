@@ -1,12 +1,15 @@
 [Unit]
-Description=SwipeSwitch live-preview window switcher
+Description=SwipeSwitch touchpad gesture service
 After=graphical-session.target
+PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/swipeswitch
+ExecStart=/usr/bin/swipeswitch
 Restart=on-failure
 RestartSec=2
+KillSignal=SIGTERM
+TimeoutStopSec=10
 
 [Install]
 WantedBy=default.target

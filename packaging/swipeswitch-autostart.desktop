@@ -1,8 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=SwipeSwitch
-Comment=Start touchpad window navigation in XFCE
-Exec=swipeswitch
+Name=SwipeSwitch Gesture Service
+Comment=Start SwipeSwitch touchpad gestures at login
+Exec=/usr/bin/swipeswitch-session-start
 Terminal=false
 X-GNOME-Autostart-enabled=true
-OnlyShowIn=XFCE;

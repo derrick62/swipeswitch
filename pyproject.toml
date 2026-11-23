@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "swipeswitch"
-version = "0.3.5"
+version = "0.3.6"
 description = "Touchpad-driven window and workspace navigation for X11 desktops"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,6 +13,8 @@ dependencies = []
 
 [project.scripts]
 swipeswitch = "swipeswitch.__main__:main"
+swipeswitch-control = "swipeswitch.control_panel:main"
+swipeswitch-session-start = "swipeswitch.service:session_start"
 
 [tool.setuptools]
 packages = [

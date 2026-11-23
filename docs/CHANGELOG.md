@@ -1,4 +1,16 @@
-## 0.3.4
+# Changelog
+
+## 0.3.6 — Control panel and user-managed lifecycle
+
+- Added a GTK control panel with live Running/Stopped status and Start/Stop controls.
+- Added an explicit per-user Launch at Login preference.
+- Added a systemd user service; stopping SwipeSwitch terminates only the SwipeSwitch service and its listener subprocess.
+- Removed automatic system-wide startup from package installation; fresh installations remain stopped until the user starts the service.
+- Preserved the user's existing configuration during source installation and package upgrades.
+- Corrected Debian packaging to include all Python subpackages and the control-panel entry point.
+- Added service lifecycle tests using a fake systemctl runner.
+- Added safe detection and graceful stopping of older manually launched instances; legacy user autostart entries are preserved under a disabled backup name.
+
 
 - Added conservative detection of common competing touchpad gesture handlers:
   libinput-gestures, Touchegg, Fusuma and Gebaar.
@@ -8,8 +20,6 @@
   non-interactive.
 - Autostart entries are preserved when disabled; no competing package is
   uninstalled and libinput itself is never disabled.
-
-# Changelog
 
 All notable project changes are documented here.
 
