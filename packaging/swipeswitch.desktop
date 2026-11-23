@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=SwipeSwitch
-Comment=Touchpad-driven window and workspace navigation
-Exec=swipeswitch
+Name=SwipeSwitch Control Panel
+Comment=Start, stop and configure SwipeSwitch
+Exec=swipeswitch-control
 Terminal=false
-Categories=Utility;System;
-StartupNotify=false
+Categories=Utility;System;Settings;
+StartupNotify=true

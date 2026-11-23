@@ -56,3 +56,14 @@ Malformed input must not terminate the application. A failed thumbnail must not 
 ## Current implementation note
 
 The 0.3.1 preview adds a horizontal preview-first switcher with a blurred desktop backdrop and incremental workspace navigation. Task View remains a separate persistent grid. Thumbnail acquisition is a synchronous best-effort snapshot at overview-open time; live refresh and performance profiling remain future work.
+
+
+## Control panel and process lifecycle (0.3.6)
+
+The gesture engine remains a foreground process. It owns the `LibinputListener`; SIGTERM reaches the existing shutdown handler, which stops the listener subprocess and exits the GTK main loop. The engine does not daemonize itself.
+
+`swipeswitch.service` is a per-user systemd unit. The GTK control panel calls `systemctl --user start/stop/is-active swipeswitch.service` through `swipeswitch.service.SwipeSwitchService`. The control panel never invokes `sudo`, never changes input-device permissions, and never controls libinput as a system service.
+
+Login startup is an independent per-user XDG autostart preference stored at `~/.config/autostart/swipeswitch-daemon.desktop`. Its helper imports the current graphical session environment into the user's systemd manager, then starts only the SwipeSwitch user service. The preference is disabled by default and does not implicitly start or stop the current session when changed.
+
+For editable installs without a packaged unit, the service manager creates a user-local development unit that points to the active `swipeswitch` executable. Debian packages instead install the canonical unit under `/usr/lib/systemd/user/`.

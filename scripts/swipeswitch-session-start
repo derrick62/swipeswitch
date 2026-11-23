@@ -1,0 +1,5 @@
+#!/bin/sh
+# Import the graphical session variables before starting the user service.
+systemctl --user import-environment \
+    DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_CURRENT_DESKTOP 2>/dev/null || true
+exec systemctl --user start swipeswitch.service
