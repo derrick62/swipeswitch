@@ -44,8 +44,6 @@ class WindowTracker:
             log.exception("Could not seed initial MRU order")
 
     def _on_active_changed(self, screen, _previous_window):
-        # Wnck reports the previous window as the signal argument; query the
-        # screen for the newly active window to keep MRU ordering correct.
         window = screen.get_active_window()
         if window is not None and self._eligible_type(window):
             self._move_front(window)

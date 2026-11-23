@@ -1,5 +1,5 @@
-from swipeswitch.gestures import GestureRecognizer
-from swipeswitch.events import GestureEvent
+from swipeswitch.recognition.gestures import GestureRecognizer
+from swipeswitch.input.events import GestureEvent
 
 
 def event(kind, fingers, dx=0, dy=0, cancelled=False):

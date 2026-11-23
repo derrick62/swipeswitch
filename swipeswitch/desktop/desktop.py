@@ -19,7 +19,6 @@ class DesktopVisibilityManager:
         return self._snapshot is not None
 
     def show_desktop(self) -> bool:
-        # Repeated down gestures must not replace the original snapshot.
         if self._snapshot is not None:
             return False
         self.screen.force_update()
@@ -55,8 +54,6 @@ class DesktopVisibilityManager:
                 restored.append(window)
             except Exception:
                 log.exception("Could not restore window %s", xid)
-        # Reactivate only the previously active window if it was actually
-        # visible and therefore part of the original restoration snapshot.
         active = live.get(self._active_xid) if self._active_xid in self._snapshot else None
         if active is not None:
             try:

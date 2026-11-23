@@ -1,184 +1,274 @@
 # SwipeSwitch
 
-A touchpad-driven desktop navigation utility for Kali Linux and Debian-based
-systems running XFCE on X11. SwipeSwitch combines three-finger window
-switching, Task View, Show Desktop/restoration and four-finger workspace
-navigation with a horizontal, preview-first window switcher.
+Touchpad-driven window and workspace navigation for X11 desktops.  
+Swipe with three or four fingers to switch windows, change workspaces, open a task overview, or show the desktop — no mouse required.
 
-**Version:** 0.3.4 — **License:** MIT  
-**Status:** First installable Debian package; live acceptance testing on the
-target laptop is still required before calling the application stable.
-
-## Core features
-
-- Three-finger right/left: browse the MRU window list and activate the selected window on release.
-- Three-finger up: open Task View, or restore a valid Show Desktop snapshot.
-- Three-finger down: hide currently visible eligible windows and preserve a snapshot.
-- Four-finger left/right: navigate next/previous XFCE virtual workspaces without wrapping.
-- Horizontal window cards with large previews, app identity, selected-card outline, animated scrolling and off-screen edge hints.
-- Monitor-aware sizing and selection of the monitor beneath the pointer when the GTK display backend supports it.
-- Lazy, best-effort X11 thumbnails and a locally captured blurred/dimmed desktop backdrop, with graceful icon/dim fallbacks.
-- Optional mouse callbacks in the switcher; they are not connected by default, so gesture-only use remains unchanged.
-- TOML configuration, XFCE autostart, and no network or telemetry.
-
-Window previews are static snapshots, not live video. Minimized, protected or
-inaccessible windows may show their application icon instead. Wayland is not
-supported. Gesture thresholds may need calibration for individual touchpads.
+---
 
 ## Requirements
 
-Kali/Debian with Python 3.10+, an X11 session, GTK 3, PyGObject, libwnck 3,
-Pillow, libinput-tools and XFCE/xfwm4. These runtime dependencies are declared
-in the Debian package and are installed by APT.
+| Requirement | Minimum version | Notes |
+|-------------|----------------|-------|
+| Python | 3.10 | 3.11+ recommended (built-in TOML parser) |
+| GTK 3 | 3.0 | `gir1.2-gtk-3.0` |
+| libwnck 3 | 3.0 | `gir1.2-wnck-3.0` |
+| libinput | any | `libinput-tools` package |
+| stdbuf | any | part of `coreutils` |
+| X11 session | — | Wayland is **not** supported |
 
-## Install the Debian package
+---
 
-Download the [SwipeSwitch 0.3.4 Debian package](https://github.com/derrick62/swipeswitch/releases/download/v0.3.4/swipeswitch_0.3.4_all.deb) from GitHub Releases. The package is also included in the repository at [`dist/swipeswitch_0.3.4_all.deb`](dist/swipeswitch_0.3.4_all.deb). Install it with APT:
+## Installation
 
-```bash
-sudo apt install ./swipeswitch_0.3.4_all.deb
-```
-
-APT installs the required runtime dependencies. The package installs:
-
-- `/usr/bin/swipeswitch` — system-wide launcher
-- `/usr/lib/python3/dist-packages/swipeswitch/` — application modules
-- `/usr/share/applications/swipeswitch.desktop` — application-menu entry
-- `/etc/xdg/autostart/swipeswitch.desktop` — XFCE session autostart
-
-
-### Touchpad gesture conflicts
-
-The package checks for system-wide running handlers and enabled system services
-during installation. APT package scripts are intentionally non-interactive
-and run as root, so per-user services and XFCE autostart entries are checked
-when you run `swipeswitch-conflicts --resolve` in your desktop terminal. The
-helper asks before stopping a process or disabling a recognised user/system
-service or XFCE autostart entry. It never uninstalls another application;
-disabled autostart files are preserved with a `.disabled-by-swipeswitch` suffix.
-
-For the source installer (`./install.sh`), this interactive review is offered
-during installation. You can run `swipeswitch-conflicts --resolve` again later.
-
-Log out and back in (or start it manually) after installation. Run it as your
-normal desktop user; **never use `sudo swipeswitch`**.
+### 1 — System dependencies
 
 ```bash
-swipeswitch --check
-swipeswitch
-swipeswitch --debug
+sudo apt install python3-gi gir1.2-gtk-3.0 gir1.2-wnck-3.0 \
+                 libinput-tools coreutils
 ```
 
-Remove the application while preserving your personal configuration with:
+> **Fedora / RHEL**
+> ```bash
+> sudo dnf install python3-gobject gtk3 libwnck3 libinput
+> ```
 
-```bash
-sudo apt remove swipeswitch
-```
+### 2 — Input-device access
 
-Purge also removes package-managed system files and does not delete your
-personal `~/.config/swipeswitch/` settings:
-
-```bash
-sudo apt purge swipeswitch
-```
-
-## Build the Debian package from source
-
-On a Debian/Kali build machine with `dpkg-deb` installed:
-
-```bash
-./build-deb.sh
-```
-
-The package is written to `dist/swipeswitch_0.3.4_all.deb`. The package is
-architecture-independent; its runtime dependencies are supplied by APT.
-
-## Input-device permissions
-
-The listener runs `libinput debug-events --device /dev/input/eventX` for the
-selected touchpad only. Reading `/dev/input/eventX` commonly requires
-membership in the `input` group. Inspect permissions before changing them:
-
-```bash
-ls -l /dev/input/event*
-getent group input
-```
-
-If access is denied and you understand the broader implications, an
-administrator can add your account to the `input` group:
+`libinput debug-events` requires read access to `/dev/input/event*`.  
+The safest way is to add your user to the `input` group:
 
 ```bash
 sudo usermod -aG input "$USER"
 ```
 
-Then log out completely and back in. Membership grants access to input
-devices more broadly than SwipeSwitch itself needs. The package deliberately
-does not change group membership or install a setuid helper.
+Log out and back in (or run `newgrp input`) for the change to take effect.  
+Verify with:
+
+```bash
+libinput debug-events --list-devices
+```
+
+If you see your touchpad listed, access is working.
+
+### 3 — Clone and install
+
+```bash
+git clone https://github.com/your-username/swipeswitch.git
+cd swipeswitch
+pip install --break-system-packages -e .
+```
+
+The `-e` flag installs in *editable* mode so changes you make to the source are reflected immediately without reinstalling.
+
+If you prefer an isolated environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+---
+
+## Running
+
+### Quick sanity check
+
+Before starting the daemon, confirm that SwipeSwitch can find your touchpad and load GTK:
+
+```bash
+swipeswitch --check
+```
+
+Expected output:
+```
+X11 DISPLAY: :0
+Touchpad:    /dev/input/event5
+Config:      /home/you/.config/swipeswitch/config.toml
+GTK 3 / libwnck imports: OK
+```
+
+### Start the daemon
+
+```bash
+swipeswitch
+```
+
+For verbose logging while you test your gestures:
+
+```bash
+swipeswitch --debug
+```
+
+Press **Ctrl-C** to stop.
+
+### Autostart on login
+
+#### XFCE / GNOME / KDE — using the desktop autostart folder
+
+```bash
+mkdir -p ~/.config/autostart
+cat > ~/.config/autostart/swipeswitch.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=SwipeSwitch
+Exec=swipeswitch
+X-GNOME-Autostart-enabled=true
+EOF
+```
+
+#### Systemd user service
+
+```bash
+mkdir -p ~/.config/systemd/user
+cat > ~/.config/systemd/user/swipeswitch.service << 'EOF'
+[Unit]
+Description=SwipeSwitch touchpad gesture daemon
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/swipeswitch
+Restart=on-failure
+Environment=DISPLAY=:0
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+systemctl --user daemon-reload
+systemctl --user enable --now swipeswitch
+```
+
+Check service status:
+```bash
+systemctl --user status swipeswitch
+journalctl --user -u swipeswitch -f
+```
+
+---
 
 ## Configuration
 
-The first run creates `~/.config/swipeswitch/config.toml` if it does not
-already exist. Common settings include:
+The config file is created automatically on first run at:
+
+```
+~/.config/swipeswitch/config.toml
+```
+
+You can point to a different file with `--config /path/to/file.toml`.
+
+### Available options
 
 ```toml
+# Which touchpad to listen on. "auto" detects the first gesture-capable device.
 touchpad_device = "auto"
-step_px = 80
+
+# Pixels of travel before the gesture is classified as horizontal or vertical.
 show_threshold_px = 35
+
+# Pixels between consecutive window-selection steps during a swipe.
+step_px = 80
+
+# Use unaccelerated touchpad movement (matches raw finger travel more closely).
 use_unaccelerated = false
+
+# Only show windows from the current virtual workspace.
 current_workspace_only = true
+
+# Window order in the switcher: "mru" (most-recently-used) or "fixed" (stack order).
 order = "mru"
+
+# Cancel an unfinished gesture after this many seconds of inactivity.
 gesture_timeout = 3.0
+
+# Colour scheme: "dark", "light", or "auto" (follows system preference).
 theme = "dark"
+
+# Which monitor to show the switcher on (only "primary" is implemented in v1).
 monitor = "primary"
-thumbnails = true
 ```
 
-- `step_px`: horizontal distance per selection/workspace step.
-- `show_threshold_px`: distance before classifying a gesture.
-- `use_unaccelerated`: use libinput's unaccelerated movement pair when available.
-- `current_workspace_only`: active workspace only; sticky windows remain eligible.
-- `order`: `mru` or `fixed`.
-- `gesture_timeout`: safety timeout in seconds.
-- `touchpad_device`: `auto` or a `/dev/input/eventX` path.
-- `theme`: `dark`, `light`, or `auto`.
-- `monitor`: retained for configuration compatibility; the polished switcher chooses the monitor beneath the pointer when possible and falls back to the primary monitor.
-- `thumbnails`: enable best-effort X11 window snapshots.
+### Reloading config without restarting
 
-After editing the config, reload the running process with `kill -HUP <PID>`.
-
-## Avoid gesture conflicts
-
-If `libinput-gestures` handles three-finger horizontal swipes, both programs
-may respond. Back up `~/.config/libinput-gestures.conf` and disable only its
-three-finger left/right bindings. Keep unrelated gestures if desired. The
-package does not edit this file automatically.
-
-## Tests and validation
-
-Run the automated tests from the source tree:
+Send `SIGHUP` to pick up changes immediately:
 
 ```bash
-python3 -m pytest -q
-python3 -m compileall -q swipeswitch
+pkill -HUP swipeswitch
 ```
 
-The automated suite uses fakes for window-manager integration. Actual GTK
-rendering, X11 thumbnail/backdrop capture, XFCE workspace timing and physical
-touchpad behaviour must be tested in a live desktop session. `swipeswitch
---check` checks X11, touchpad discovery and GTK/libwnck imports; it does not
-replace a real gesture test.
+---
+
+## Gestures
+
+| Fingers | Direction | Action |
+|---------|-----------|--------|
+| 3 | Left / Right | Switch between open windows (swipe to scroll, release to activate) |
+| 3 | Up | Open task overview |
+| 3 | Down | Show desktop (swipe up again to restore windows) |
+| 4 | Left / Right | Move to next / previous virtual workspace |
+
+---
+
+## Project structure
+
+```
+swipeswitch/
+├── input/
+│   ├── __init__.py
+│   ├── listener.py      # libinput subprocess + restartable thread
+│   ├── parser.py        # pure text→dataclass parser (no I/O)
+│   └── events.py        # GestureEvent dataclass
+├── recognition/
+│   ├── __init__.py
+│   └── gestures.py      # GestureRecognizer + GestureAction
+├── desktop/
+│   ├── __init__.py
+│   ├── tracker.py       # MRU window list (Wnck-backed)
+│   ├── workspaces.py    # virtual workspace navigation
+│   ├── desktop.py       # show-desktop snapshot/restore
+│   └── activator.py     # window activation + wmctrl fallback
+├── ui/
+│   ├── __init__.py
+│   ├── overlay.py       # switcher overlay window
+│   ├── task_view.py     # monitor-aware task overview grid
+│   ├── theme.py         # CSS strings + ThemeManager
+│   ├── cards.py         # CardBuilder — individual card widgets
+│   ├── animations.py    # AnimationMixer — fade + scroll
+│   └── helpers.py       # LayoutEngine + WindowPropertyHelpers
+├── config.py            # Config dataclass + TOML loader
+├── controller.py        # gesture→action wiring
+└── __main__.py          # entry point
+```
+
+Flat shims at the top level (`swipeswitch/events.py`, `swipeswitch/gestures.py`, etc.) forward imports for backward compatibility with any code that used the old structure.
+
+---
+
+## Running the tests
+
+```bash
+pip install --break-system-packages pytest
+python -m pytest
+```
+
+Tests that require a live X11/GTK session are skipped automatically; the pure-Python suite (parser, gestures, controller, config, tracker, workspaces) runs anywhere.
+
+---
 
 ## Troubleshooting
 
-- **No touchpad detected:** inspect `libinput list-devices`; set `touchpad_device` to the correct event path if auto-detection is ambiguous.
-- **Permission denied:** inspect `/dev/input` access and input-group membership. Never run the app as root.
-- **No gesture events:** test `libinput debug-events --device /dev/input/eventX` and confirm the touchpad reports the configured finger count.
-- **Double switching:** disable conflicting three-finger horizontal bindings in libinput-gestures.
-- **No overlay:** confirm X11 (`echo "$DISPLAY"`) and GTK/libwnck packages; run with `--debug`.
-- **Unexpected initial MRU order:** the MRU list is seeded from stacking order and improves as windows receive focus changes.
+**"No pointer device with libinput gesture capability was found"**  
+Run `libinput list-devices` and check that your touchpad has `gesture` in its capabilities. If it does not, your kernel or libinput version may not support it.
 
-## Privacy
+**"Permission denied reading /dev/input/eventX"**  
+Your user is not in the `input` group. Run `sudo usermod -aG input "$USER"` and log out/in.
 
-SwipeSwitch processes local libinput gesture events and local X11 window
-metadata/previews. It does not read keyboard devices, record keystrokes, send
-telemetry or require a network connection.
+**"libinput was not found"**  
+Install `libinput-tools` (`sudo apt install libinput-tools`).
+
+**"SwipeSwitch requires an X11 session"**  
+You are on a Wayland session. SwipeSwitch requires X11; on a mixed session set `DISPLAY=:0 swipeswitch`.
+
+**Gestures are detected but windows do not switch**  
+Check that `wmctrl` is installed (`sudo apt install wmctrl`) as the activation fallback; some window managers also require compositing to be enabled.

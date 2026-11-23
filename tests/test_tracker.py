@@ -1,5 +1,5 @@
 from swipeswitch.config import Config
-from swipeswitch.tracker import WindowTracker
+from swipeswitch.desktop.tracker import WindowTracker
 
 
 class FakeScreen:

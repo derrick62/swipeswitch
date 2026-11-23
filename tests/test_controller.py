@@ -31,7 +31,7 @@ def test_right_swipe_advances_to_next_displayed_window():
     controller.selected = 0
     controller.switcher = FakeSwitcher()
 
-    from swipeswitch.gestures import GestureAction
+    from swipeswitch.recognition.gestures import GestureAction
     controller._dispatch(GestureAction("switch_move", 3, "right", 1))
 
     assert controller.selected == 1
@@ -44,7 +44,7 @@ def test_left_swipe_moves_to_previous_displayed_window():
     controller.selected = 2
     controller.switcher = FakeSwitcher()
 
-    from swipeswitch.gestures import GestureAction
+    from swipeswitch.recognition.gestures import GestureAction
     controller._dispatch(GestureAction("switch_move", 3, "left", 1))
 
     assert controller.selected == 1
@@ -66,7 +66,7 @@ class FakeWorkspaces:
 
 
 def test_four_finger_workspace_action_applies_each_incremental_step():
-    from swipeswitch.gestures import GestureAction
+    from swipeswitch.recognition.gestures import GestureAction
     controller = SwipeSwitchController.__new__(SwipeSwitchController)
     controller.task_view = FakeTaskView()
     controller.workspaces = FakeWorkspaces()
@@ -78,7 +78,7 @@ def test_four_finger_workspace_action_applies_each_incremental_step():
 
 
 def test_workspace_navigation_stops_when_boundary_is_reached():
-    from swipeswitch.gestures import GestureAction
+    from swipeswitch.recognition.gestures import GestureAction
     controller = SwipeSwitchController.__new__(SwipeSwitchController)
     controller.task_view = FakeTaskView()
     controller.workspaces = FakeWorkspaces([True, False, True])
