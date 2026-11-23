@@ -1,6 +1,6 @@
 """Regression tests for the single runtime gesture recogniser."""
-from swipeswitch.events import GestureEvent
-from swipeswitch.gestures import GestureRecognizer
+from swipeswitch.input.events import GestureEvent
+from swipeswitch.recognition.gestures import GestureRecognizer
 
 
 def test_event_defaults_are_normalised():
@@ -15,7 +15,7 @@ def test_recogniser_timeout_cancels_active_switch(monkeypatch):
     recognizer.handle(GestureEvent("begin", fingers=3))
     recognizer.handle(GestureEvent("update", fingers=3, dx=-25))
     recognizer.last_activity = 1.0
-    monkeypatch.setattr("swipeswitch.gestures.time.monotonic", lambda: 5.0)
+    monkeypatch.setattr("swipeswitch.recognition.gestures.time.monotonic", lambda: 5.0)
     actions = recognizer.check_timeout(2.0)
     assert [action.name for action in actions] == ["switch_cancel"]
     assert recognizer.fingers == 0

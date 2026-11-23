@@ -1,4 +1,4 @@
-from swipeswitch.workspaces import WorkspaceManager
+from swipeswitch.desktop.workspaces import WorkspaceManager
 
 
 class Workspace:

@@ -1,4 +1,4 @@
-from swipeswitch.desktop import DesktopVisibilityManager
+from swipeswitch.desktop.desktop import DesktopVisibilityManager
 
 
 class Window:

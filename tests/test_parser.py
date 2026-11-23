@@ -1,4 +1,4 @@
-from swipeswitch.listener import parse_libinput_line
+from swipeswitch.input.parser import parse_libinput_line
 
 
 def test_begin():
